@@ -1,33 +1,33 @@
 import { isBlank, isDigit, isAlpha } from './utils';
 
-enum TokenType {
-  VariableDeclaration,    // 变量申明关键字
-  Identifier,             // 变量字
-  NumericLiteral,         // 数字
-  StringLiteral,          // 字符串
-  GreaterThanToken,       // >
-  GreaterThanEqualsToken, // >=
-  LessThanToken,          // <
-  LessThanEqualsToken,    // <=
-  EqualsToken,            // =
-  PlusToken,              // +
-  MinusToken,             // -
-  AsteriskToken,          // *
-  SlashToken,             // /
-  SemiColon,              // ;
-  LeftParen,              // (
-  RightParen,             // )
+export enum Token {
+  VariableDeclaration = 'VariableDeclaration',       // 变量申明关键字
+  Identifier = 'Identifier',                         // 变量字
+  NumericLiteral = 'NumericLiteral',                 // 数字
+  StringLiteral = 'StringLiteral',                   // 字符串
+  GreaterThanToken = 'GreaterThanToken',             // >
+  GreaterThanEqualsToken = 'GreaterThanEqualsToken', // >=
+  LessThanToken = 'LessThanToken',                   // <
+  LessThanEqualsToken = 'LessThanEqualsToken',       // <=
+  EqualsToken = 'EqualsToken',                       // =
+  PlusToken = 'PlusToken',                           // +
+  MinusToken = 'MinusToken',                         // -
+  AsteriskToken = 'AsteriskToken',                   // *
+  SlashToken = 'SlashToken',                         // /
+  SemiColon = 'SemiColon',                           // ;
+  LeftParen = 'LeftParen',                           // (
+  RightParen = 'RightParen',                         // )
 }
 
-export interface NodeItem {
+export interface NodeType {
   value: string;
-  type: TokenType;
+  type: Token;
 }
 
 
 export function tokenizer(input: string) {
   let current = 0;
-  let tokens: NodeItem[] = [];
+  let tokens: NodeType[] = [];
 
   while (current < input.length) {
     let char = input[current];
@@ -48,7 +48,7 @@ export function tokenizer(input: string) {
       }
 
       tokens.push({
-        type: TokenType.NumericLiteral,
+        type: Token.NumericLiteral,
         value
       })
       continue;
@@ -63,7 +63,7 @@ export function tokenizer(input: string) {
         char = input[++current];
       }
 
-      tokens.push({ type: TokenType.Identifier, value });
+      tokens.push({ type: Token.Identifier, value });
       continue;
     }
 
@@ -80,60 +80,55 @@ export function tokenizer(input: string) {
 
       // do keyword filter
     
-      tokens.push({ type: TokenType.StringLiteral, value });
+      tokens.push({ type: Token.StringLiteral, value });
 
       continue;
     }
 
-
-    // if (char === ">" && ) {
-
-    // }
-    
     if (char === '+') {
-      tokens.push({ type: TokenType.PlusToken, value: char });
+      tokens.push({ type: Token.PlusToken, value: char });
       current++;
       continue;
     }
 
     if (char === '-') {
-      tokens.push({ type: TokenType.MinusToken, value: char });
+      tokens.push({ type: Token.MinusToken, value: char });
       current++;
       continue;
     }
 
     if (char === '*') {
-      tokens.push({ type: TokenType.AsteriskToken, value: char });
+      tokens.push({ type: Token.AsteriskToken, value: char });
       current++;
       continue;
     }
 
     if (char === '/') {
-      tokens.push({ type: TokenType.SlashToken, value: char });
+      tokens.push({ type: Token.SlashToken, value: char });
       current++;
       continue;
     }
 
     if (char === ';') {
-      tokens.push({ type: TokenType.SemiColon, value: char });
+      tokens.push({ type: Token.SemiColon, value: char });
       current++;
       continue;
     }
 
     if (char === '(') {
-      tokens.push({ type: TokenType.LeftParen, value: char });
+      tokens.push({ type: Token.LeftParen, value: char });
       current++;
       continue;
     }
 
     if (char === ')') {
-      tokens.push({ type: TokenType.RightParen, value: char });
+      tokens.push({ type: Token.RightParen, value: char });
       current++;
       continue;
     }
 
     if (char === '=') {
-      tokens.push({ type: TokenType.EqualsToken, value: char });
+      tokens.push({ type: Token.EqualsToken, value: char });
       current++;
       continue;
     }
