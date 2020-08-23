@@ -1,9 +1,10 @@
 import { isAlpha, isDigit, isBlank, TokenReader } from './utils';
 
-enum State {
+enum TokenType {
   Init,
-  Identifier,
-  NumericLiteral,
+  VariableDeclaration,    // 变量申明关键字
+  Identifier,             // 变量字
+  NumericLiteral,         // 数字
   GreaterThanToken,       // >
   GreaterThanEqualsToken, // >=
   LessThanToken,          // <
@@ -19,85 +20,85 @@ enum State {
 }
 
 export interface Token {
-  tokenType: State;
-  tokenText: string;
+  type: TokenType;
+  text: string;
 }
 
 let tokens: Token[] = [];
-let tokenType: State | null = null;
+let tokenType: TokenType | null = null;
 let tokenText: string[] = [];
 
-function initToken(ch: string): State {
+function initToken(ch: string): TokenType {
   if (tokenText.length) {
     tokens.push({
-      tokenType: tokenType as State,
-      tokenText: tokenText.toString(),
+      type: tokenType as TokenType,
+      text: tokenText.toString(),
     });
 
     tokenType = null;
     tokenText = [];
   }
 
-  let newState = State.Init;
+  let newState = TokenType.Init;
   if (isAlpha(ch)) {              //第一个字符是字母
-    tokenType = State.Identifier;
+    tokenType = TokenType.Identifier;
     tokenText.push(ch);
   } else if (isDigit(ch)) {       //第一个字符是数字
-    newState = State.NumericLiteral;
-    tokenType = State.NumericLiteral;
+    newState = TokenType.NumericLiteral;
+    tokenType = TokenType.NumericLiteral;
     tokenText.push(ch);
   } else if (ch == '>') {         //第一个字符是>
-    newState = State.GreaterThanToken;
-    tokenType = State.GreaterThanToken;
+    newState = TokenType.GreaterThanToken;
+    tokenType = TokenType.GreaterThanToken;
     tokenText.push(ch);
   } else if (ch == '+') {
-    newState = State.PlusToken;
-    tokenType = State.PlusToken;
+    newState = TokenType.PlusToken;
+    tokenType = TokenType.PlusToken;
     tokenText.push(ch);
   } else if (ch == '-') {
-    newState = State.MinusToken;
-    tokenType = State.MinusToken;
+    newState = TokenType.MinusToken;
+    tokenType = TokenType.MinusToken;
     tokenText.push(ch);
   } else if (ch == '*') {
-    newState = State.AsteriskToken;
-    tokenType = State.AsteriskToken;
+    newState = TokenType.AsteriskToken;
+    tokenType = TokenType.AsteriskToken;
     tokenText.push(ch);
   } else if (ch == '/') {
-    newState = State.SlashToken;
-    tokenType = State.SlashToken;
+    newState = TokenType.SlashToken;
+    tokenType = TokenType.SlashToken;
     tokenText.push(ch);
   } else if (ch == ';') {
-    newState = State.SemiColon;
-    tokenType = State.SemiColon;
+    newState = TokenType.SemiColon;
+    tokenType = TokenType.SemiColon;
     tokenText.push(ch);
   } else if (ch == '(') {
-    newState = State.LeftParen;
-    tokenType = State.LeftParen;
+    newState = TokenType.LeftParen;
+    tokenType = TokenType.LeftParen;
     tokenText.push(ch);
   } else if (ch == ')') {
-    newState = State.RightParen;
-    tokenType = State.RightParen;
+    newState = TokenType.RightParen;
+    tokenType = TokenType.RightParen;
     tokenText.push(ch);
   } else if (ch == '=') {
-    newState = State.EqualsToken;
-    tokenType = State.EqualsToken;
+    newState = TokenType.EqualsToken;
+    tokenType = TokenType.EqualsToken;
     tokenText.push(ch);
   } else {
-    newState = State.Init; // skip all unknown patterns
+    newState = TokenType.Init; // skip all unknown patterns
   }
 
   return newState
 }
 
 export function tokenize(code: string) {
-  let state = State.Init;
+  let state = TokenType.Init;
   let ich: string;
 
   for (let ch of code.split('')) {
     ich = ch;
 
     switch (state) {
-      case State.Identifier: {
+      case TokenType.Identifier: {
         if (isAlpha(ch) && isDigit(ch)) {
           tokenText.push(ch);
         } else {
@@ -105,7 +106,7 @@ export function tokenize(code: string) {
         }
         break;
       }
-      case State.NumericLiteral: {
+      case TokenType.NumericLiteral: {
         if (isDigit(ch)) {
           tokenText.push(ch);
         } else {
@@ -113,37 +114,37 @@ export function tokenize(code: string) {
         }
         break;
       }
-      case State.GreaterThanToken: {
+      case TokenType.GreaterThanToken: {
         if ("=" === ch) {
-          tokenType = State.GreaterThanEqualsToken;
-          state = State.GreaterThanEqualsToken;
+          tokenType = TokenType.GreaterThanEqualsToken;
+          state = TokenType.GreaterThanEqualsToken;
           tokenText.push(ch);
         } else {
           state = initToken(ch);
         }
         break;
       }
-      case State.LessThanToken: {
+      case TokenType.LessThanToken: {
         if ("=" === ch) {
           tokenText.push(ch);
-          tokenType = State.LessThanEqualsToken;
-          state = State.LessThanEqualsToken;
+          tokenType = TokenType.LessThanEqualsToken;
+          state = TokenType.LessThanEqualsToken;
         } else {
           state = initToken(ch);
         }
         break;
       }
-      case State.Init:
-      case State.GreaterThanEqualsToken:
-      case State.LessThanEqualsToken:
-      case State.EqualsToken:
-      case State.PlusToken:
-      case State.MinusToken:
-      case State.AsteriskToken:
-      case State.SlashToken:
-      case State.SemiColon:
-      case State.LeftParen:
-      case State.RightParen: {
+      case TokenType.Init:
+      case TokenType.GreaterThanEqualsToken:
+      case TokenType.LessThanEqualsToken:
+      case TokenType.EqualsToken:
+      case TokenType.PlusToken:
+      case TokenType.MinusToken:
+      case TokenType.AsteriskToken:
+      case TokenType.SlashToken:
+      case TokenType.SemiColon:
+      case TokenType.LeftParen:
+      case TokenType.RightParen: {
         state = initToken(ch);
         break;
       }
