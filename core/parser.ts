@@ -1,5 +1,4 @@
 import { NodeItem, Token } from './tokenizer';
-import { TokenReader } from './utils';
 
 class AstNode {
   value: NodeItem;
@@ -16,99 +15,136 @@ class AstNode {
   }
 }
 
-/**
- * 语法解析：乘法表达式
- */
-function multiplicative(tokens: TokenReader): AstNode | null {
-  let child1 = primary(tokens);
-  let node = child1;
-  let token = tokens.peek();
+export function print(node: AstNode, indent: string) {
+  console.log("node:", node.value);
+  console.log(indent + node.value.type + ":" + node.value.value)
 
-  if (child1 != null && token != null) {
-    if (token.type === Token.SlashToken || token.type === Token.AsteriskToken) {
-      token = tokens.read();
-      let child2 = multiplicative(tokens);
-
-      if (child2 != null) {
-        node = new AstNode(token);
-        node.addChild(child1);
-        node.addChild(child2);
-      } else {
-        throw new Error("invalid multiplicative expression, expecting the right part.");
-      }
+  if (node.children) {
+    for (const child of node.children) {
+      print(child, indent + "\t");
     }
   }
-
-  return node;
 }
 
-/**
- * 语法解析：加法表达式
- */
-function additive(tokens: TokenReader): AstNode | null {
-  let child1 = multiplicative(tokens);
-  let node = child1;
-  let token = tokens.peek();
+export class Parser {
+  private pos: number = 0;
+  private tokens: NodeItem[];
 
-  if (child1 != null && token != null) {
-    if (token.type === Token.PlusToken || token.type === Token.MinusToken) {
-      token = tokens.read();
-      let child2 = additive(tokens);
-
-
-      if (child2 != null) {
-        node = new AstNode(token);
-        node.addChild(child1);
-        node.addChild(child2);
-      } else {
-        throw new Error("invalid additive expression, expecting the right part.");
-      }
-    }
+  constructor(tokens: NodeItem[]) {
+    console.log("tokens:", tokens);
+    this.tokens = tokens;
   }
 
-  return node;
-}
+  public parse() {
+    const node = new AstNode({
+      type: Token.Root,
+      value: "Root"
+    })
+    const child = this.walkAdditive();
 
-function primary(tokens: TokenReader) {
-  let node: AstNode | null = null;
-  let token = tokens.peek();
-
-  if (token != null) {
-    if (token.type === Token.NumericLiteral) {
-      node = new AstNode(tokens.read())
+    if (child != null) {
+      node.addChild(child);
     }
 
-    if (token.type === Token.LeftParen) {
-      tokens.read();
-      node = additive(tokens);
+    return node;
+  }
 
-      if (node != null) {
-        token = tokens.peek();
-        
-        if (token != null && token.type === Token.RightParen) {
-          token = tokens.read();
+  /**
+  * 语法解析：乘法表达式
+  */
+  private walkMultiplicative(): AstNode | null {
+    let child1 = this.walkPrimary();
+    let node = child1;
+    let token = this.peek();
+
+    if (child1 != null && token != null) {
+      if (token.type === Token.SlashToken || token.type === Token.AsteriskToken) {
+        token = this.read();
+        let child2 = this.walkMultiplicative();
+
+        if (child2 != null) {
+          node = new AstNode(token);
+          node.addChild(child1);
+          node.addChild(child2);
         } else {
-          throw new Error("expecting right parenthesis");
+          throw new Error("invalid multiplicative expression, expecting the right part.");
         }
-      } else {
-        throw new Error("expecting an additive expression inside parenthesis");
       }
     }
+
+    return node;
   }
 
-  return node;
-}
+  /**
+   * 语法解析：加法表达式
+   */
+  private walkAdditive(): AstNode | null {
+    let child1 = this.walkMultiplicative();
+    let node = child1;
 
-export function parser(tokens: NodeItem[]) {
-  let node = new AstNode({
-    type: Token.Root,
-    value: "Root"
-  })
-  let child = additive(new TokenReader(tokens));
+    if (child1 != null) {
+      while (true) {
+        let token = this.peek();
 
-  if (child != null) {
-    node.addChild(child);
-}
+        if (token != null && (token.type === Token.PlusToken || token.type === Token.MinusToken)) {
+          token = this.read();
+          let child2 = this.walkMultiplicative();
+          node = new AstNode(token);
+          node.addChild(child1);
+          node.addChild(child2);
+          child1 = node;
+        } else {
+          break;
+        }
+      }
+    }
 
-  return node;
+    return node;
+  }
+
+  /**
+   * 语法解析：基础表达式
+   */
+  private walkPrimary() {
+    let node: AstNode | null = null;
+    let token = this.peek();
+
+    if (token != null) {
+      if (token.type === Token.NumericLiteral) {
+        node = new AstNode(this.read())
+      }
+
+      if (token.type === Token.LeftParen) {
+        this.read();
+        node = this.walkAdditive();
+
+        if (node != null) {
+          token = this.peek();
+
+          if (token != null && token.type === Token.RightParen) {
+            token = this.read();
+          } else {
+            throw new Error("expecting right parenthesis");
+          }
+        } else {
+          throw new Error("expecting an additive expression inside parenthesis");
+        }
+      }
+    }
+
+    return node;
+  }
+
+  private read(): NodeItem {
+    this.pos += 1;
+    return this.peek();
+  }
+
+  private peek(): NodeItem | null {
+    if (this.pos > this.tokens.length) {
+      return null;
+    }
+
+    return this.tokens[this.pos];
+  }
 }

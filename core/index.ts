@@ -1,4 +1,4 @@
-import { parser } from './parser';
+import { Parser, print } from './parser';
 import { tokenizer } from './tokenizer';
 
-console.log(parser(tokenizer('1 + 2 + 3 * 6')));
+console.log(print(new Parser(tokenizer('1 + 2 + 3 * 6')).parse(), ''));
