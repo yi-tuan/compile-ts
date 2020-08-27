@@ -1,4 +1,4 @@
-import {Token} from './lexer';
+import {NodeItem} from './tokenizer';
 
 //是否是字母
 export function isAlpha(ch: string): boolean {
@@ -17,10 +17,10 @@ export function isBlank(ch: string): boolean {
 
 
 export class TokenReader {
-  private tokens: Token[];
+  private tokens: NodeItem[];
   private pos: number = 0;
 
-  constructor(tokens: Token[]) {
+  constructor(tokens: NodeItem[]) {
     this.tokens = tokens;
   }
 
@@ -30,12 +30,16 @@ export class TokenReader {
     }
   }
 
-  public read(): Token {
+  public read(): NodeItem {
     this.pos += 1;
     return this.peek();
   }
 
-  public peek(): Token {
+  public peek(): NodeItem | null {
+    if (this.pos > this.tokens.length) {
+      return null;
+    }
+
     return this.tokens[this.pos];
   }
 

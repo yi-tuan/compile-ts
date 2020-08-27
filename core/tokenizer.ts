@@ -1,6 +1,7 @@
 import { isBlank, isDigit, isAlpha } from './utils';
 
 export enum Token {
+  Root = "Root",
   VariableDeclaration = 'VariableDeclaration',       // 变量申明关键字
   Identifier = 'Identifier',                         // 变量字
   NumericLiteral = 'NumericLiteral',                 // 数字
@@ -19,15 +20,15 @@ export enum Token {
   RightParen = 'RightParen',                         // )
 }
 
-export interface NodeType {
-  value: string;
+export interface NodeItem {
   type: Token;
+  value: string;
 }
 
 
 export function tokenizer(input: string) {
   let current = 0;
-  let tokens: NodeType[] = [];
+  let tokens: NodeItem[] = [];
 
   while (current < input.length) {
     let char = input[current];
