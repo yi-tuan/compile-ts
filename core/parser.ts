@@ -16,11 +16,9 @@ class AstNode {
 }
 
 export function print(node: AstNode, indent: string) {
-  console.log("node:", node.value);
-  console.log(indent + node.value.type + ":" + node.value.value)
-
   if (node.children) {
     for (const child of node.children) {
+      console.log(indent + child.value.type + ":" + child.value.value)
       print(child, indent + "\t");
     }
   }
@@ -50,32 +48,6 @@ export class Parser {
   }
 
   /**
-  * 语法解析：乘法表达式
-  */
-  private walkMultiplicative(): AstNode | null {
-    let child1 = this.walkPrimary();
-    let node = child1;
-    let token = this.peek();
-
-    if (child1 != null && token != null) {
-      if (token.type === Token.SlashToken || token.type === Token.AsteriskToken) {
-        token = this.read();
-        let child2 = this.walkMultiplicative();
-
-        if (child2 != null) {
-          node = new AstNode(token);
-          node.addChild(child1);
-          node.addChild(child2);
-        } else {
-          throw new Error("invalid multiplicative expression, expecting the right part.");
-        }
-      }
-    }
-
-    return node;
-  }
-
-  /**
    * 语法解析：加法表达式
    */
   private walkAdditive(): AstNode | null {
@@ -95,6 +67,32 @@ export class Parser {
           child1 = node;
         } else {
           break;
+        }
+      }
+    }
+
+    return node;
+  }
+
+  /**
+  * 语法解析：乘法表达式
+  */
+  private walkMultiplicative(): AstNode | null {
+    let child1 = this.walkPrimary();
+    let node = child1;
+    let token = this.peek();
+
+    if (child1 != null && token != null) {
+      if (token.type === Token.SlashToken || token.type === Token.AsteriskToken) {
+        token = this.read();
+        let child2 = this.walkMultiplicative();
+
+        if (child2 != null) {
+          node = new AstNode(token);
+          node.addChild(child1);
+          node.addChild(child2);
+        } else {
+          throw new Error("invalid multiplicative expression, expecting the right part.");
         }
       }
     }
@@ -136,8 +134,9 @@ export class Parser {
   }
 
   private read(): NodeItem {
+    const value = this.peek();
     this.pos += 1;
-    return this.peek();
+    return value;
   }
 
   private peek(): NodeItem | null {
