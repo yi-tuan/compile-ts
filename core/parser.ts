@@ -59,12 +59,11 @@ export class Parser {
         let token = this.peek();
 
         if (token != null && (token.type === Token.PlusToken || token.type === Token.MinusToken)) {
-          token = this.read();
+          this.read();
           let child2 = this.walkMultiplicative();
           node = new AstNode(token);
           node.addChild(child1);
           node.addChild(child2);
-          child1 = node;
         } else {
           break;
         }
