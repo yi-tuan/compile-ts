@@ -108,25 +108,27 @@ export class Parser {
     let token = this.peek();
 
     if (token != null) {
-      if (token.type === Token.NumericLiteral) {
-        node = new AstNode(this.read())
-      }
+      switch (token.type) {
+        case Token.NumericLiteral:
+          node = new AstNode(this.read())
+          break;
+        case Token.LeftParen:
+          this.read();
+          node = this.walkAdditive();
 
-      if (token.type === Token.LeftParen) {
-        this.read();
-        node = this.walkAdditive();
+          if (node != null) {
+            token = this.peek();
 
-        if (node != null) {
-          token = this.peek();
-
-          if (token != null && token.type === Token.RightParen) {
-            token = this.read();
+            if (token != null && token.type === Token.RightParen) {
+              token = this.read();
+            } else {
+              throw new Error("expecting right parenthesis");
+            }
           } else {
-            throw new Error("expecting right parenthesis");
+            throw new Error("expecting an additive expression inside parenthesis");
           }
-        } else {
-          throw new Error("expecting an additive expression inside parenthesis");
-        }
+        default:
+          break;
       }
     }
 
