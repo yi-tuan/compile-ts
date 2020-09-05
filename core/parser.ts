@@ -119,7 +119,7 @@ export class Parser {
             token = this.peek();
 
             if (token != null && token.type === Token.RightParen) {
-              token = this.read();
+              this.read();
             } else {
               throw new Error("expecting right parenthesis");
             }

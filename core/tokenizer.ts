@@ -20,6 +20,12 @@ export enum Token {
   RightParen = 'RightParen',                         // )
 }
 
+export enum KeyWords {
+  VAR = 'var',
+  LET = 'let',
+  CONST = 'const'
+}
+
 export interface NodeItem {
   type: Token;
   value: string;
@@ -32,7 +38,7 @@ export function tokenizer(input: string) {
 
   while (current < input.length) {
     let char = input[current];
-    
+
     // skip to the next cycle
     if (isBlank(char)) {
       current++;
@@ -79,8 +85,6 @@ export function tokenizer(input: string) {
       }
       char = input[++current];
 
-      // do keyword filter
-    
       tokens.push({ type: Token.StringLiteral, value });
 
       continue;
