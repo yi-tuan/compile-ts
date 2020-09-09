@@ -64,6 +64,8 @@ export class Parser {
           node = new AstNode(token);
           node.addChild(child1);
           node.addChild(child2);
+
+          child1 = node;
         } else {
           break;
         }
@@ -86,10 +88,12 @@ export class Parser {
 
         if (token != null && (token.type === Token.SlashToken || token.type === Token.AsteriskToken)) {
           token = this.read();
-          let child2 = this.walkMultiplicative();
+          let child2 = this.walkPrimary();
           node = new AstNode(token);
           node.addChild(child1);
           node.addChild(child2);
+
+          child1 = node;
         } else {
           break;
         }
