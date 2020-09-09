@@ -1,4 +1,4 @@
-import { isAlpha, isDigit, isBlank, TokenReader } from './utils';
+import { isAlpha, isDigit } from './utils';
 
 enum TokenType {
   Init,
@@ -155,7 +155,7 @@ export function tokenize(code: string) {
     initToken(ich!);
   }
 
-  return new TokenReader(tokens);
+  return tokens;
 }
 
 
