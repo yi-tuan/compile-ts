@@ -1,4 +1,4 @@
-import { isAlpha, isDigit } from './utils';
+import { isAlpha, isDigit } from '../utils';
 
 enum TokenType {
   Init,

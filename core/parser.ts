@@ -79,19 +79,19 @@ export class Parser {
   private walkMultiplicative(): AstNode | null {
     let child1 = this.walkPrimary();
     let node = child1;
-    let token = this.peek();
 
-    if (child1 != null && token != null) {
-      if (token.type === Token.SlashToken || token.type === Token.AsteriskToken) {
-        token = this.read();
-        let child2 = this.walkMultiplicative();
+    if (child1 != null) {
+      while (true) {
+        let token = this.peek();
 
-        if (child2 != null) {
+        if (token != null && (token.type === Token.SlashToken || token.type === Token.AsteriskToken)) {
+          token = this.read();
+          let child2 = this.walkMultiplicative();
           node = new AstNode(token);
           node.addChild(child1);
           node.addChild(child2);
         } else {
-          throw new Error("invalid multiplicative expression, expecting the right part.");
+          break;
         }
       }
     }
