@@ -1,4 +1,4 @@
-import { NodeItem, Token } from './tokenizer';
+import { NodeItem, Token } from "./tokenizer";
 export class AstNode {
   value: NodeItem;
   children: AstNode[] = [];
@@ -24,8 +24,8 @@ export class Parser {
   public parse() {
     const node = new AstNode({
       type: Token.Root,
-      value: "Root"
-    })
+      value: "Root",
+    });
     const child = this.walkAdditive();
 
     if (child != null) {
@@ -46,7 +46,10 @@ export class Parser {
       while (true) {
         let token = this.peek();
 
-        if (token != null && (token.type === Token.PlusToken || token.type === Token.MinusToken)) {
+        if (
+          token != null &&
+          (token.type === Token.PlusToken || token.type === Token.MinusToken)
+        ) {
           this.read();
           let child2 = this.walkMultiplicative();
           node = new AstNode(token);
@@ -64,8 +67,8 @@ export class Parser {
   }
 
   /**
-  * Syntax parsing：multiple expression
-  */
+   * Syntax parsing：multiple expression
+   */
   private walkMultiplicative(): AstNode | null {
     let child1 = this.walkPrimary();
     let node = child1;
@@ -74,7 +77,11 @@ export class Parser {
       while (true) {
         let token = this.peek();
 
-        if (token != null && (token.type === Token.SlashToken || token.type === Token.AsteriskToken)) {
+        if (
+          token != null &&
+          (token.type === Token.SlashToken ||
+            token.type === Token.AsteriskToken)
+        ) {
           token = this.read();
           let child2 = this.walkPrimary();
           node = new AstNode(token);
@@ -102,7 +109,7 @@ export class Parser {
     if (token != null) {
       switch (token.type) {
         case Token.NumericLiteral:
-          node = new AstNode(this.read())
+          node = new AstNode(this.read());
           break;
         case Token.LeftParen:
           this.read();
@@ -117,7 +124,9 @@ export class Parser {
               throw new Error("expecting right parenthesis");
             }
           } else {
-            throw new Error("expecting an additive expression inside parenthesis");
+            throw new Error(
+              "expecting an additive expression inside parenthesis"
+            );
           }
         default:
           break;

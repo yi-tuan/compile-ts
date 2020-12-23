@@ -2,10 +2,10 @@ import { isBlank, isDigit, isAlpha } from './utils';
 
 export enum Token {
   Root = "Root",
-  VariableDeclaration = 'VariableDeclaration',       // 变量申明关键字
-  Identifier = 'Identifier',                         // 变量字
-  NumericLiteral = 'NumericLiteral',                 // 数字
-  StringLiteral = 'StringLiteral',                   // 字符串
+  VariableDeclaration = 'VariableDeclaration',       
+  Identifier = 'Identifier',                         
+  NumericLiteral = 'NumericLiteral',                
+  StringLiteral = 'StringLiteral',                   
   GreaterThanToken = 'GreaterThanToken',             // >
   GreaterThanEqualsToken = 'GreaterThanEqualsToken', // >=
   LessThanToken = 'LessThanToken',                   // <
@@ -30,7 +30,6 @@ export interface NodeItem {
   type: Token;
   value: string;
 }
-
 
 export function tokenizer(input: string) {
   let current = 0;
@@ -138,7 +137,7 @@ export function tokenizer(input: string) {
       continue;
     }
 
-    throw new TypeError('I dont know what this character is: ' + char);
+    throw new TypeError("I don't know what this character is: " + char);
   }
 
   return tokens;
