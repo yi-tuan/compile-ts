@@ -29,7 +29,6 @@ export class Parser {
   private tokens: NodeItem[];
 
   constructor(tokens: NodeItem[]) {
-    console.log("tokens:", tokens);
     this.tokens = tokens;
   }
 
