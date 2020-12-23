@@ -1,6 +1,5 @@
 import { NodeItem, Token } from './tokenizer';
-
-class AstNode {
+export class AstNode {
   value: NodeItem;
   children: AstNode[] = [];
   parent: AstNode | null = null;
@@ -14,16 +13,6 @@ class AstNode {
     this.children.push(child);
   }
 }
-
-export function print(node: AstNode, indent: string) {
-  if (node.children) {
-    for (const child of node.children) {
-      console.log(indent + child.value.type + ":" + child.value.value)
-      print(child, indent + "\t");
-    }
-  }
-}
-
 export class Parser {
   private pos: number = 0;
   private tokens: NodeItem[];
@@ -47,7 +36,7 @@ export class Parser {
   }
 
   /**
-   * 语法解析：加法表达式
+   * Syntax parsing：add expression
    */
   private walkAdditive(): AstNode | null {
     let child1 = this.walkMultiplicative();
@@ -75,7 +64,7 @@ export class Parser {
   }
 
   /**
-  * 语法解析：乘法表达式
+  * Syntax parsing：multiple expression
   */
   private walkMultiplicative(): AstNode | null {
     let child1 = this.walkPrimary();
@@ -103,7 +92,8 @@ export class Parser {
   }
 
   /**
-   * 语法解析：基础表达式
+   * Syntax parsing：basic expression
+   *
    */
   private walkPrimary() {
     let node: AstNode | null = null;
@@ -137,12 +127,14 @@ export class Parser {
     return node;
   }
 
+  /** read current value and consume */
   private read(): NodeItem {
     const value = this.peek();
     this.pos += 1;
     return value;
   }
 
+  /** read current value, not consume */
   private peek(): NodeItem | null {
     if (this.pos > this.tokens.length) {
       return null;
